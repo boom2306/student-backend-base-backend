@@ -1,71 +1,90 @@
-const { trips } = require('../models/Trip');
+const {trips} = require('../models/Tripmodel.js');
 
-// Retrieve all trips
+
 const retrieveAllTrips = (req, res) => {
-  const allTrips = trips;
-  res.status(200).json({
-    status: 'success',
-    message: 'Trips retrieved successfully',
-    results: allTrips.length,
-    data: allTrips,
-  });
-};
-
-// Create a new trip
-const createTrip = (req, res) => {
-  const {
-    destinationName,
-    location,
-    continent,
-    language,
-    description,
-    flightCost,
-    accommodationCost,
-    mealCost,
-    visaCost,
-    transportationCost,
-    currencyCode,
-  } = req.body;
-
-  if (
-    !destinationName ||
-    !location ||
-    !continent ||
-    !language ||
-    !description
-  ) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Please provide all required fields.',
+    const allTrips = getTripswithdailycost();
+    res.status(200).json({
+        status: 'success',
+        message: 'Trips retrieved successsfully',
+        results: allTrips.length,
+        data: allTrips,
     });
-  }
-
-  const newTrip = {
-    id: trips.length + 1,
-    destinationName,
-    location,
-    continent,
-    language,
-    description,
-    flightCost: flightCost || 0,
-    accommodationCost: accommodationCost || 0,
-    mealCost: mealCost || 0,
-    visaCost: visaCost || 0,
-    transportationCost: transportationCost || 0,
-    currencyCode: currencyCode || 'N/A',
-  };
-
-  trips.push(newTrip);
-
-  res.status(201).json({
-    status: 'success',
-    message: 'Trip created successfully',
-    data: newTrip,
-  });
 };
 
+const createtrip =(req,res) => {
+    const {
+        destinationName,
+        location,
+        continent,
+        language,
+        description,
+        flightCost,
+        accommodationCost,
+        mealCost,
+        visaCost,
+        transportationCost,
+        currencyCode,}=req.body;
 
-module.exports = {
-  createTrip,
-  retrieveAllTrips
-};
+
+const newTrip=
+{
+id:trips.length+1,
+destinationName,
+        location,
+        continent,
+        language,
+        description,
+        flightCost,
+        accommodationCost,
+        mealCost,
+        visaCost,
+        transportationCost,
+        currencyCode,
+
+}
+trips.push(newTrip);
+
+}
+
+const deleteTripById=(req,res)=>{
+    const id=Number(req.params.id);
+    const index=trips.findIndex(t=>t.id==id);
+    trips.slice(index,1);
+    res.status(200).json({
+        status:'success',
+        message:'Trip deleted successfully'
+    });
+}
+
+module.exports
+{retrieveAllTrips,createTrip,deleteTripById};
+
+const { db } = require('../db.js');
+
+
+const query = `
+    INSERT INTO TRIP (
+        DESTINATIONNAME, LOCATION, CONTINENT, LANGUAGE, DESCRIPTION, 
+        FLIGHTCOST, ACCOMMODATIONCOST, MEALCOST, VISACOST, TRANSPORTATIONCOST, CURRENCYCODE
+    ) 
+     
+        
+    VALUES ('${destinationName}', '${location}', '${continent}', '${language}',
+      '${description}','${flightCost}','${accommodationCost}','${mealcost}', 
+      '${visacost}','${transportationCost}','${currencycode}'
+    )
+    `;
+
+    db.run(query, (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                message: 'Database error',
+                error: err.message
+            });
+        };
+   
+        return res.status(201).json({
+            message: 'Trip created successfully'
+        });
+    });
