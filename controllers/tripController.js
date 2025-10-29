@@ -88,3 +88,37 @@ const query = `
             message: 'Trip created successfully'
         });
     });
+
+    // Retrieve all trips
+const retrieveAllTrips = (req, res) => {
+  const query = 'SELECT * FROM TRIP';
+
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ message: 'Error retrieving trips' });
+    }
+
+    return res.status(200).json({
+      message: 'Trips retrieved successfully',
+      data: rows
+    });
+  });
+};
+
+// Retrieve a single trip by ID
+const retrieveTripById = (req, res) => {
+  const id = req.params.id;
+  const query = SELECT * FROM TRIP WHERE ID = ${id};
+
+  db.get(query, (err, row) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ message: 'Error fetching trip' });
+    }
+
+    if (!row) return res.status(404).json({ message: 'Trip not found' });
+
+    return res.status(200).json({ message: 'Trip retrieved successfully', data: row });
+  });
+};
