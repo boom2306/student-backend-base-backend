@@ -34,10 +34,14 @@ const createUser = (req, res) => {
       // Insert
       const query = `
         INSERT INTO USER (EMAIL, ROLE, PASSWORD)
-        VALUES ('${email}', '${role}', '${hashedPassword}')
+        VALUES (?, ?, ?)
       `;
+
+      const params = [
+        email, role, password
+      ];
   
-      db.run(query, (err) => {
+      db.run(query, params,(err) => {
         if (err) {
           // Handle unique constraint violation
           if (err.message.includes('UNIQUE constraint')) {
